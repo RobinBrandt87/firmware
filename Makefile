@@ -68,7 +68,11 @@ openwrt-update: stamp-clean-openwrt-updated .stamp-openwrt-updated
 
 # patches require updated openwrt working copy
 $(OPENWRT_DIR)/patches: | .stamp-openwrt-updated
-	ln -s $(FW_DIR)/patches $@
+	ln -s $(FW_DIR)/patches/openwrt $@
+
+# patches require updated openwrt working copy
+$(OPENWRT_DIR)/feeds/luci/patches: | .stamp-feeds-updated
+	ln -s $(FW_DIR)/patches/packages/luci $@
 
 # feeds
 $(OPENWRT_DIR)/feeds.conf: .stamp-openwrt-updated feeds.conf
@@ -84,7 +88,7 @@ feeds-update: stamp-clean-feeds-updated .stamp-feeds-updated
 
 # prepare patch
 pre-patch: stamp-clean-pre-patch .stamp-pre-patch
-.stamp-pre-patch: .stamp-feeds-updated $(wildcard $(FW_DIR)/patches/*) | $(OPENWRT_DIR)/patches
+.stamp-pre-patch: .stamp-feeds-updated $(wildcard $(FW_DIR)/patches/*) | $(OPENWRT_DIR)/patches $(OPENWRT_DIR)/feeds/luci/patches
 	touch $@
 
 # patch openwrt working copy
@@ -92,6 +96,7 @@ patch: stamp-clean-patched .stamp-patched
 .stamp-patched: .stamp-pre-patch
 	cd $(OPENWRT_DIR); quilt push -a
 	rm -rf $(OPENWRT_DIR)/tmp
+	cd $(OPENWRT_DIR)/feeds/luci; quilt push -a
 	touch $@
 
 .stamp-build_rev: .FORCE
