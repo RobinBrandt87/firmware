@@ -5,3 +5,5 @@
 600-imagebuilder-custom-postinst-script.patch
 700-banner-info.patch
 800-mbedtls-accept-rsa-1024.patch
+0012-tools-mktplinkfw2-add-split-uboot-layout.patch
+0013-ramips-add-support-for-Archer-C50-v4.patch
