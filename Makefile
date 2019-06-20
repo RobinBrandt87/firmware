@@ -241,12 +241,24 @@ stamp-clean-%:
 stamp-clean:
 	rm -f .stamp-*
 
+unpatch: unpatch-openwrt unpatch-luci
+	rm -f .stamp-patched
+
 # unpatch needs "patches/" in openwrt
-unpatch: $(OPENWRT_DIR)/patches
+unpatch-openwrt:
+ifneq ($(wildcard $(OPENWRT_DIR)/.pc),)
 # RC = 2 of quilt --> nothing to be done
 	cd $(OPENWRT_DIR); quilt pop -a -f || [ $$? = 2 ] && true
 	rm -rf $(OPENWRT_DIR)/tmp
-	rm -f .stamp-patched
+	rm -rf $(OPENWRT_DIR)/.pc
+endif
+
+unpatch-luci: 
+ifneq ($(wildcard $(OPENWRT_DIR)/feeds/luci/.pc),)
+#    $(error luci was patched!)
+	cd $(OPENWRT_DIR)/feeds/luci; quilt pop -a
+	rm -rf $(OPENWRT_DIR)/feeds/luci/.pc
+endif
 
 clean: stamp-clean .stamp-openwrt-cleaned
 
